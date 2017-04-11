@@ -1,3 +1,6 @@
+include 'okay.thrift'
+include 'double.dot.thrift'
+
 namespace php hehe
 namespace * haha
 

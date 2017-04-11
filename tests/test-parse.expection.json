@@ -1,4 +1,8 @@
 {
+  "include": {
+    "okay": "okay.thrift",
+    "double.dot": "double.dot.thrift"
+  },
   "namespace": {
     "php": {
       "serviceName": "hehe"
