@@ -1,4 +1,7 @@
 {
+  "include": {
+    "okay.thrift": "{cwd}/okay.thrift"
+  },
   "namespace": {
     "php": {
       "serviceName": "hehe"

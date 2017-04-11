@@ -1,3 +1,5 @@
+const path = require('path');
+
 class ThriftFileParsingError extends Error {
   constructor(message) {
     super(message);
@@ -326,6 +328,16 @@ module.exports = (buffer, offset = 0) => {
     return { subject, name, serviceName };
   };
 
+  const readInclude = () => {
+
+    let subject = readKeyword('include');
+    let name = readStringValue();
+    // TODO: should this be relative to some option paths or something?
+    // Maybe we can use a module to get the caller?
+    let filepath = path.join(process.cwd(), name);
+    return { subject, name, filepath };
+  };
+
   const readServiceBlock = () => {
     readCharCode(123); // {
     let receiver = readUntilThrow(readServiceItem, 'name');
@@ -365,7 +377,7 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readSubject = () => {
-    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace);
+    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace, readInclude);
   };
 
   const readThrift = () => {
@@ -383,6 +395,9 @@ module.exports = (buffer, offset = 0) => {
           case 'service':
           case 'struct':
             storage[subject][name] = block.items;
+            break;
+          case 'include':
+            storage[subject][name] = block.filepath;
             break;
           default:
             storage[subject][name] = block;

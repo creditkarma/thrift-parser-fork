@@ -1,3 +1,5 @@
+include 'okay.thrift'
+
 namespace php hehe
 
 /******
