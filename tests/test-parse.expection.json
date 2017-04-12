@@ -60,6 +60,14 @@
     "C6": {
       "type": "bool",
       "value": false
+    },
+    "C8": {
+      "type": "bool",
+      "value": true
+    },
+    "C9": {
+      "type": "bool",
+      "value": false
     }
   },
   "enum": {
