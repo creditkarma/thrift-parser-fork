@@ -41,6 +41,12 @@ struct Struct2 {
     4: required i16 field3,
 }
 
+struct NoID {
+  i32 num0,
+  i32 num1;
+  i32 num2;
+}
+
 exception Exception1 {
     1: required i32 error_code,
     2: required string error_name,

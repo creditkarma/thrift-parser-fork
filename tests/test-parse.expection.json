@@ -134,6 +134,23 @@
         "type": "i16",
         "name": "field3"
       }
+    ],
+    "NoID": [
+      {
+        "id": -1,
+        "type": "i32",
+        "name": "num0"
+      },
+      {
+        "id": -2,
+        "type": "i32",
+        "name": "num1"
+      },
+      {
+        "id": -3,
+        "type": "i32",
+        "name": "num2"
+      }
     ]
   },
   "exception": {

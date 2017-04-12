@@ -286,14 +286,25 @@ module.exports = (buffer, offset = 0) => {
 
   const readStructBlock = () => {
     readCharCode(123); // {
-    let receiver = readUntilThrow(readStructItem);
+    let receiver  = readUntilThrow(readStructItem);
+    let defaultId = -1;
+    receiver.forEach((block) => {
+      if (!block.id) {
+        block.id = defaultId;
+        defaultId -= 1;
+      }
+    })
     readCharCode(125); // }
     return receiver;
   };
 
   const readStructItem = () => {
-    let id = readNumberValue();
-    readCharCode(58); // :
+    // Read the FieldID, it might not exist
+    let id = readAnyOne(readNumberValue, readNoop);
+    // If the FieldID exists, it needs to be followed by :
+    if (id) {
+      readCharCode(58); // :
+    }
     let option = readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
     let type = readType();
     let name = readName();
