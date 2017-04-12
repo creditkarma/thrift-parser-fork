@@ -14,6 +14,8 @@ const list<i32> C3 = [ 1, 2, 3 ]
 const map<i32, string> C4 = { 1: 'a', 2: 'b', 3: 'c' }
 const bool C5 = true
 const bool C6 = false
+const i16 C10 = 0x7fff
+const i32 C11 = 0x7fffffff
 
 /**
  * Enum
