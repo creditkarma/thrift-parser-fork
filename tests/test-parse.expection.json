@@ -60,6 +60,14 @@
     "C6": {
       "type": "bool",
       "value": false
+    },
+    "C12": {
+      "type": "i16",
+      "value": -30000
+    },
+    "C13": {
+      "type": "i32",
+      "value": 2147483647
     }
   },
   "enum": {
