@@ -189,9 +189,7 @@ module.exports = (buffer, offset = 0) => {
 
     for (;;) {
       let byte = buffer[offset];
-      if (
-        (byte >= 48 && byte <= 57) // 0-9
-      ) {
+      if (byte >= 48 && byte <= 57) { // 0-9
         offset++;
         result.push(byte);
       } else {
