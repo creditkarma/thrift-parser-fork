@@ -6,6 +6,8 @@ namespace * haha
  *****/
 typedef string Json
 typedef i64 Mobile
+typedef string ListSep1;
+typedef string ListSep2,
 
 /**
  * Const
@@ -20,6 +22,8 @@ const bool C8 = true;
 const bool C9 = false,
 const i16 C10 = 0x7fff
 const i32 C11 = 0x7fffffff
+const i16 C12 = -3e4
+const i32 C13 = 2.147483647e9
 
 /**
  * Enum
@@ -45,6 +49,12 @@ struct Struct2 {
     2: required Json field1,
     3: required Mobile field2,
     4: required i16 field3,
+}
+
+union Union1 {
+  1: string field1;
+  2: int field2;
+  3: required string dropOption;
 }
 
 exception Exception1 {

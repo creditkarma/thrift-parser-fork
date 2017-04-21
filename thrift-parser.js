@@ -107,6 +107,7 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('typedef');
     let type = readType();
     let name = readName();
+    readComma();
     return { subject, type, name };
   };
 
@@ -170,6 +171,43 @@ module.exports = (buffer, offset = 0) => {
     for (;;) {
       let byte = buffer[offset];
       if ((byte >= 48 && byte <= 57) || byte === 45 || byte === 46) {
+        offset++;
+        result.push(byte);
+      } else {
+        if (result.length) {
+          readSpace();
+          return +String.fromCharCode(...result);
+        } else {
+          throw 'Unexpected token ' + String.fromCharCode(byte);
+        }
+      }
+    }
+  };
+
+  const readEnotationValue = () => {
+    let result = [];
+    if (buffer[offset] === 45) { // -
+      result.push(buffer[offset]);
+      offset++;
+    }
+
+    for (;;) {
+      let byte = buffer[offset];
+      if ((byte >= 48 && byte <= 57) || byte === 46) {
+        result.push(byte);
+        offset++;
+      } else {
+        break;
+      }
+    }
+
+    if (buffer[offset] !== 69 && buffer[offset] !== 101) throw 'Unexpected token'; // E or e
+    result.push(buffer[offset]);
+    offset++;
+
+    for (;;) {
+      let byte = buffer[offset];
+      if (byte >= 48 && byte <= 57) { // 0-9
         offset++;
         result.push(byte);
       } else {
@@ -283,6 +321,7 @@ module.exports = (buffer, offset = 0) => {
 
   const readValue = () => readAnyOne(
     readHexadecimalValue, // This coming before readNumberValue is important, unfortunately
+    readEnotationValue,   // This also needs to come before readNumberValue
     readNumberValue,
     readStringValue,
     readBooleanValue,
@@ -359,6 +398,34 @@ module.exports = (buffer, offset = 0) => {
     return result;
   };
 
+  const readUnion = () => {
+    let subject = readKeyword('union');
+    let name = readName();
+    let items = readUnionBlock();
+    return { subject, name, items };
+  };
+
+  const readUnionBlock = () => {
+    readCharCode(123); // {
+    let receiver = readUntilThrow(readUnionItem);
+    readCharCode(125); // }
+    return receiver;
+  };
+
+  const readUnionItem = () => {
+    let id = readNumberValue();
+    readCharCode(58); // :
+    // Read the keyword but drop it
+    readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
+    let type = readType();
+    let name = readName();
+    let defaultValue = readAssign();
+    readComma();
+    let result = { id, type, name };
+    if (defaultValue !== void 0) result.defaultValue = defaultValue;
+    return result;
+  };
+
   const readException = () => {
     let subject = readKeyword('exception');
     let name = readName();
@@ -383,7 +450,7 @@ module.exports = (buffer, offset = 0) => {
     let name = readName();
     let extend = readExtends(); // extends is a reserved keyword
     let functions = readServiceBlock();
-    let result = { subject, name };
+    let result = {subject, name};
     if (extend !== void 0) result.extends = extend;
     if (functions !== void 0) result.functions = functions;
     return result;
@@ -435,7 +502,7 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readSubject = () => {
-    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace);
+    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readUnion, readException, readService, readNamespace);
   };
 
   const readThrift = () => {
