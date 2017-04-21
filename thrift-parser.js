@@ -1,3 +1,6 @@
+const util = require('util');
+const log = util.debuglog('thrift-parser');
+
 class ThriftFileParsingError extends Error {
   constructor(message) {
     super(message);
@@ -402,6 +405,13 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('union');
     let name = readName();
     let items = readUnionBlock();
+    // Drop option and log if required
+    items.forEach(function (item) {
+      if (item.option === 'required') {
+        log(`Union ${name} field ${item.name}: union members must be optional, ignoring specified requiredness.`);
+      }
+      delete item.option;
+    });
     return { subject, name, items };
   };
 
@@ -416,12 +426,12 @@ module.exports = (buffer, offset = 0) => {
     let id = readNumberValue();
     readCharCode(58); // :
     // Read the keyword but drop it
-    readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
+    let option = readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
     let type = readType();
     let name = readName();
     let defaultValue = readAssign();
     readComma();
-    let result = { id, type, name };
+    let result = { id, type, name, option };
     if (defaultValue !== void 0) result.defaultValue = defaultValue;
     return result;
   };
