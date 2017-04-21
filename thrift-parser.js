@@ -418,6 +418,13 @@ module.exports = (buffer, offset = 0) => {
     return { subject, name, serviceName };
   };
 
+  const readInclude = () => {
+    let subject = readKeyword('include');
+    let items = readStringValue();
+    let name = items.split('.').slice(0, -1).join('.');
+    return { subject, name, items };
+  };
+
   const readServiceBlock = () => {
     readCharCode(123); // {
     let receiver = readUntilThrow(readServiceItem, 'name');
@@ -457,7 +464,7 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readSubject = () => {
-    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace);
+    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace, readInclude);
   };
 
   const readThrift = () => {
@@ -474,6 +481,7 @@ module.exports = (buffer, offset = 0) => {
           case 'exception':
           case 'service':
           case 'struct':
+          case 'include':
             storage[subject][name] = block.items;
             break;
           default:
