@@ -148,6 +148,23 @@ module.exports = (buffer, offset = 0) => {
     return value;
   };
 
+  const readScope = () => {
+    let i = 0;
+    let result = [];
+    let byte = buffer[offset];
+    while (
+      (byte >= 97 && byte <= 122) || // a-z
+      byte === 95 ||                 // _
+      (byte >= 65 && byte <= 90) ||  // A-Z
+      (byte >= 48 && byte <= 57) ||  // 0-9
+      (byte === 42)                  // *
+    ) byte = buffer[offset + ++i];
+    if (i === 0) throw 'Unexpected token';
+    let value = buffer.toString('utf8', offset, offset += i);
+    readSpace();
+    return value;
+  };
+
   const readNumberValue = () => {
     let result = [];
     for (;;) {
@@ -190,6 +207,41 @@ module.exports = (buffer, offset = 0) => {
     for (;;) {
       let byte = buffer[offset];
       if (byte >= 48 && byte <= 57) { // 0-9
+        offset++;
+        result.push(byte);
+      } else {
+        if (result.length) {
+          readSpace();
+          return +String.fromCharCode(...result);
+        } else {
+          throw 'Unexpected token ' + String.fromCharCode(byte);
+        }
+      }
+    }
+  };
+
+  const readHexadecimalValue = () => {
+    let result = [];
+    if (buffer[offset] === 45) { // -
+      result.push(buffer[offset]);
+      offset++;
+    }
+
+    if (buffer[offset] !== 48) throw 'Unexpected token'; // 0
+    result.push(buffer[offset]);
+    offset++;
+
+    if (buffer[offset] !== 88 && buffer[offset] !== 120) throw 'Unexpected token'; // x or X
+    result.push(buffer[offset]);
+    offset++;
+
+    for (;;) {
+      let byte = buffer[offset];
+      if (
+        (byte >= 48 && byte <= 57) || // 0-9
+        (byte >= 65 && byte <= 70) || // A-F
+        (byte >= 97 && byte <= 102)   // a-f
+      ) {
         offset++;
         result.push(byte);
       } else {
@@ -267,6 +319,7 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readValue = () => readAnyOne(
+    readHexadecimalValue, // This coming before readNumberValue is important, unfortunately
     readEnotationValue,   // This also needs to come before readNumberValue
     readNumberValue,
     readStringValue,
@@ -281,6 +334,7 @@ module.exports = (buffer, offset = 0) => {
     let type = readType();
     let name = readName();
     let value = readAssign();
+    readComma();
     return { subject, type, name, value };
   };
 
@@ -354,12 +408,12 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('service');
     let name = readName();
     let items = readServiceBlock();
-    return { subject, name, items }; 
+    return { subject, name, items };
   };
 
   const readNamespace = () => {
     let subject = readKeyword('namespace');
-    let name = readName();
+    let name = readScope();
     let serviceName = readRefValue()['='].join('.');
     return { subject, name, serviceName };
   };
