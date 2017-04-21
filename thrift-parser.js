@@ -183,6 +183,43 @@ module.exports = (buffer, offset = 0) => {
     }
   };
 
+  const readEnotationValue = () => {
+    let result = [];
+    if (buffer[offset] === 45) { // -
+      result.push(buffer[offset]);
+      offset++;
+    }
+
+    for (;;) {
+      let byte = buffer[offset];
+      if ((byte >= 48 && byte <= 57) || byte === 46) {
+        result.push(byte);
+        offset++;
+      } else {
+        break;
+      }
+    }
+
+    if (buffer[offset] !== 69 && buffer[offset] !== 101) throw 'Unexpected token'; // E or e
+    result.push(buffer[offset]);
+    offset++;
+
+    for (;;) {
+      let byte = buffer[offset];
+      if (byte >= 48 && byte <= 57) { // 0-9
+        offset++;
+        result.push(byte);
+      } else {
+        if (result.length) {
+          readSpace();
+          return +String.fromCharCode(...result);
+        } else {
+          throw 'Unexpected token ' + String.fromCharCode(byte);
+        }
+      }
+    }
+  };
+
   const readHexadecimalValue = () => {
     let result = [];
     if (buffer[offset] === 45) { // -
@@ -283,6 +320,7 @@ module.exports = (buffer, offset = 0) => {
 
   const readValue = () => readAnyOne(
     readHexadecimalValue, // This coming before readNumberValue is important, unfortunately
+    readEnotationValue,   // This also needs to come before readNumberValue
     readNumberValue,
     readStringValue,
     readBooleanValue,
@@ -370,7 +408,7 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('service');
     let name = readName();
     let items = readServiceBlock();
-    return { subject, name, items }; 
+    return { subject, name, items };
   };
 
   const readNamespace = () => {
