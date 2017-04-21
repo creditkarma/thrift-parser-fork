@@ -168,9 +168,14 @@ module.exports = (buffer, offset = 0) => {
 
   const readNumberValue = () => {
     let result = [];
-    for (;;) {
+    if (buffer[offset] === 45) { // -
+      result.push(buffer[offset]);
+      offset++;
+    }
+
+    for (; ;) {
       let byte = buffer[offset];
-      if ((byte >= 48 && byte <= 57) || byte === 45 || byte === 46) {
+      if ((byte >= 48 && byte <= 57) || byte === 46) {
         offset++;
         result.push(byte);
       } else {
