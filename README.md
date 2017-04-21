@@ -1,3 +1,5 @@
+![build status](https://travis-ci.org/creditkarma/thrift-parser.svg?branch=master)
+
 ## thrift-parser
 
 To parse thrift file to a AST.
