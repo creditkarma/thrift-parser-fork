@@ -425,7 +425,6 @@ module.exports = (buffer, offset = 0) => {
   const readUnionItem = () => {
     let id = readNumberValue();
     readCharCode(58); // :
-    // Read the keyword but drop it
     let option = readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
     let type = readType();
     let name = readName();
