@@ -19,6 +19,9 @@
     },
     "ListSep2": {
       "type": "string"
+    },
+    "Buffer": {
+      "type": "binary"
     }
   },
   "const": {
@@ -151,6 +154,12 @@
         "option": "required",
         "type": "i16",
         "name": "field"
+      },
+      {
+        "id": 5,
+        "type": "binary",
+        "name": "field2",
+        "option": "required"
       }
     ],
     "Struct2": [
