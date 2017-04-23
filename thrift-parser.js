@@ -16,7 +16,6 @@ module.exports = (buffer, offset = 0) => {
         return args[i]();
       } catch (ignore) {
         offset = beginning;
-        continue;
       }
     }
     offset = beginning;
@@ -25,7 +24,7 @@ module.exports = (buffer, offset = 0) => {
 
   const readUntilThrow = (transaction, key) => {
     let receiver = key ? {} : [];
-    let beginning;
+    let beginning = undefined;
     for (;;) {
       try {
         beginning = offset;
@@ -531,9 +530,8 @@ module.exports = (buffer, offset = 0) => {
       } catch (message) {
         console.error(`[31m${buffer.slice(offset, offset + 50)}[0m`); // eslint-disable-line
         throw new ThriftFileParsingError(message);
-      } finally {
-        if (buffer.length === offset) break;
       }
+      if (buffer.length === offset) break;
     }
     return storage;
   };

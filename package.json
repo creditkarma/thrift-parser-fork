@@ -6,6 +6,10 @@
   "author": "rongyi.liu@ele.me",
   "license": "MIT",
   "scripts": {
+    "lint": "eslint thrift-parser.js",
     "test": "cd tests && ./test.sh"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0"
   }
 }
