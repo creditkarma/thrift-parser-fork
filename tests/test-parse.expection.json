@@ -193,6 +193,23 @@
         "name": "field4",
         "defaultValue": "default value"
       }
+    ],
+    "NoID": [
+      {
+        "id": -1,
+        "type": "i32",
+        "name": "num0"
+      },
+      {
+        "id": -2,
+        "type": "i32",
+        "name": "num1"
+      },
+      {
+        "id": -3,
+        "type": "i32",
+        "name": "num2"
+      }
     ]
   },
   "union": {
