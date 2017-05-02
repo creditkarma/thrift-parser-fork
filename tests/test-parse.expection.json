@@ -206,17 +206,21 @@
         {
           "id": 1,
           "type": "string",
-          "name": "field1"
+          "name": "field1",
+          "option": "optional"
         },
         {
           "id": 2,
           "type": "int",
-          "name": "field2"
+          "name": "field2",
+          "option": "optional"
         },
         {
           "id": 3,
           "type": "string",
-          "name": "dropOption"
+          "name": "dropOption",
+          "option": "optional",
+          "originalOption": "required"
         }
       ]
     }

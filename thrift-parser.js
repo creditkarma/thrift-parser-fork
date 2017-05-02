@@ -427,13 +427,13 @@ module.exports = (buffer, offset = 0) => {
   const readUnionItem = () => {
     let id = readNumberValue();
     readCharCode(58); // :
-    // Read the keyword but drop it
-    readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
+    let originalOption = readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
     let type = readType();
     let name = readName();
     let defaultValue = readAssign();
     readComma();
-    let result = { id, type, name };
+    let result = { id, type, name, option: 'optional' };
+    if (originalOption !== void 0) result.originalOption = originalOption;
     if (defaultValue !== void 0) result.defaultValue = defaultValue;
     return result;
   };
