@@ -6,6 +6,10 @@
   "author": "rongyi.liu@ele.me",
   "license": "MIT",
   "scripts": {
-    "test": "cd tests && ./test.sh"
+    "test": "mocha tests/index.js && cd tests && ./test.sh"
+  },
+  "devDependencies": {
+    "expect": "^1.20.2",
+    "mocha": "^3.2.0"
   }
 }
