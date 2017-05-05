@@ -477,6 +477,15 @@ describe('thriftParser', function() {
       done();
     });
 
+    it.skip('does not parse a const without assignment', function(done) {
+      const content = `
+        const string test
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
     it('parses a const as a number for number types', function(done) {
       const content = `
         const i32 test = 123
