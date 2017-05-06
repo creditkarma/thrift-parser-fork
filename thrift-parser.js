@@ -471,7 +471,8 @@ module.exports = (buffer, offset = 0) => {
     let name = readName();
     let defaultValue = readAssign();
     readComma();
-    let result = {id, type, name};
+    let result = {type, name};
+    if (id !== void 0) result.id = id;
     if (option !== void 0) result.option = option;
     if (defaultValue !== void 0) result.defaultValue = defaultValue;
     return result;

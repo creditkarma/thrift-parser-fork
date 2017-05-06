@@ -1709,8 +1709,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: Remove undefined field in output
-    it.skip('parses a struct containing a field without a FieldID', function(done) {
+    it('parses a struct containing a field without a FieldID', function(done) {
       const content = `
         struct Test {
           string test1
@@ -1734,7 +1733,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a struct containing a field without a FieldID but with required', function(done) {
+    it('parses a struct containing a field without a FieldID but with required', function(done) {
       const content = `
         struct Test {
           required string test1
@@ -1759,7 +1758,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a struct containing mixed fields with/without a FieldID', function(done) {
+    it('parses a struct containing mixed fields with/without a FieldID', function(done) {
       const content = `
         struct Test {
           string test1
