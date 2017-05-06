@@ -136,7 +136,7 @@ module.exports = (source, offset = 0) => {
   const readType = () => readAnyOne(readTypeMap, readTypeList, readTypeNormal);
 
   const readTypeMap = () => {
-    let name = readName();
+    let name = readKeyword('map');
     readChar('<');
     let keyType = readType();
     readComma();
@@ -146,7 +146,7 @@ module.exports = (source, offset = 0) => {
   };
 
   const readTypeList = () => {
-    let name = readName();
+    let name = readAnyOne(() => readKeyword('list'), () => readKeyword('set'));
     readChar('<');
     let valueType = readType();
     readChar('>');
