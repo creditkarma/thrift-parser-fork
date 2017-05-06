@@ -677,8 +677,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: this currently OOMs V8
-    it.skip('does not parse a const with a value wrapped in mixed-quotes', function(done) {
+    it('does not parse a const with a value wrapped in mixed-quotes', function(done) {
       const content = `
         const string test = "hello world'
       `;

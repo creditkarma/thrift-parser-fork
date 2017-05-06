@@ -277,13 +277,13 @@ module.exports = (buffer, offset = 0) => {
   const readStringValue = () => {
     let receiver = [];
     let start;
-    for (; ;) {
+    while (buffer[offset] != null) {
       let byte = buffer[offset++];
       if (receiver.length) {
         if (byte === start) { // " or '
           receiver.push(byte);
           readSpace();
-          return new Function('return ' + String.fromCharCode(...receiver))();
+          return String.fromCharCode(...receiver.slice(1, -1));
         } else if (byte === 92) { // \
           receiver.push(byte);
           offset++;
@@ -300,6 +300,7 @@ module.exports = (buffer, offset = 0) => {
         }
       }
     }
+    throw 'Unterminated string value';
   };
 
   const readListValue = () => {
