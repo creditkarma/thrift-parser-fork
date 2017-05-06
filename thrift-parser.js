@@ -397,7 +397,9 @@ module.exports = (source, offset = 0) => {
     let name = readName();
     let value = readAssign();
     readComma();
-    return {name, value};
+    let result = {name};
+    if (value !== void 0) result.value = value;
+    return result;
   };
 
   const readAssign = () => {

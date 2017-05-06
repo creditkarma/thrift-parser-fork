@@ -68,8 +68,7 @@ describe('enums', function() {
     done();
   });
 
-  // TODO: fix values
-  it.skip('parses an enum without values', function(done) {
+  it('parses an enum without values', function(done) {
     const content = `
       enum Test {
         test1
@@ -102,8 +101,7 @@ describe('enums', function() {
     done();
   });
 
-  // TODO: fix values
-  it.skip('parses an enum with mixed values', function(done) {
+  it('parses an enum with mixed values', function(done) {
     const content = `
       enum Test {
         test1 = 1
