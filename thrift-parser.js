@@ -10,6 +10,7 @@ class ThriftFileParsingError extends Error {
 module.exports = (buffer, offset = 0) => {
 
   buffer = new Buffer(buffer);
+  let containerType;
 
   const readAnyOne = (...args) => {
     let beginning = offset;
@@ -122,6 +123,7 @@ module.exports = (buffer, offset = 0) => {
     readComma();
     let valueType = readType();
     readCharCode(62); // >
+    containerType = name;
     return {name, keyType, valueType};
   };
 
@@ -130,6 +132,7 @@ module.exports = (buffer, offset = 0) => {
     readCharCode(60); // <
     let valueType = readType();
     readCharCode(62); // >
+    containerType = name;
     return {name, valueType};
   };
 
@@ -311,6 +314,10 @@ module.exports = (buffer, offset = 0) => {
       return value;
     });
     readCharCode(93); // ]
+    if (containerType !== 'set' && containerType !== 'list') {
+      throw `Invalid ${containerType} value`;
+    }
+    containerType = undefined;
     return list;
   };
 
@@ -324,6 +331,10 @@ module.exports = (buffer, offset = 0) => {
       return {key, value};
     });
     readCharCode(125); // }
+    if (containerType !== 'map') {
+      throw `Invalid ${containerType} value`;
+    }
+    containerType = undefined;
     return list;
   };
 
