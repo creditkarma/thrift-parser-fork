@@ -489,16 +489,19 @@ module.exports = (source, offset = 0) => {
   };
 
   const readQuotation = () => {
+    let quoteMatch;
     if (source[offset] === '"' || source[offset] === '\'') {
+      quoteMatch = source[offset];
       offset++;
     } else {
       throw 'include error';
     }
     let i = offset;
-    while (source[i] !== '"' && source[i] !== '\'') {
+    // Read until it finds a matching quote or end-of-file
+    while (source[i] !== quoteMatch && source[i] != null) {
       i++;
     }
-    if (source[i] === '"' || source[i] === '\'') {
+    if (source[i] === quoteMatch) {
       let value = source.slice(offset, i);
       offset = i + 1;
       return value;
