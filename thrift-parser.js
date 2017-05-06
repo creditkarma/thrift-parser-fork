@@ -179,7 +179,8 @@ module.exports = (source, offset = 0) => {
       byte === '_' ||
       (byte >= 'A' && byte <= 'Z') ||
       (byte >= '0' && byte <= '9') ||
-      (byte === '*')
+      (byte === '*') ||
+      (byte === '.')
     ) byte = source[offset + ++i];
     if (i === 0) throw 'Unexpected token on readScope';
     let value = source.slice(offset, offset += i);
