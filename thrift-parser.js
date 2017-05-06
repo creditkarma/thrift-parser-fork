@@ -537,6 +537,7 @@ module.exports = (buffer, offset = 0) => {
         switch (subject) {
           case 'exception':
           case 'struct':
+          case 'union':
             storage[subject][name] = block.items;
             break;
           default:
