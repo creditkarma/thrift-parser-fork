@@ -1377,7 +1377,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with a string value assignment', function(done) {
+    it('does not parse an enum with a string value assignment', function(done) {
       const content = `
         enum Test {
           test1 = 'test'
@@ -1388,7 +1388,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with a decimal value assignment', function(done) {
+    it('does not parse an enum with a decimal value assignment', function(done) {
       const content = `
         enum Test {
           test1 = 1.2
@@ -1399,7 +1399,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with an e-notation value assignment', function(done) {
+    it('does not parse an enum with an e-notation value assignment', function(done) {
       const content = `
         enum Test {
           test1 = 1e2
@@ -1410,7 +1410,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with a Map value assignment', function(done) {
+    it('does not parse an enum with a Map value assignment', function(done) {
       const content = `
         enum Test {
           test1 = {'test':'test'}
@@ -1421,7 +1421,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with a Set/List value assignment', function(done) {
+    it('does not parse an enum with a Set/List value assignment', function(done) {
       const content = `
         enum Test {
           test1 = [1,2,3]

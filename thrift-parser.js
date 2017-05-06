@@ -171,12 +171,51 @@ module.exports = (buffer, offset = 0) => {
     return value;
   };
 
-  const readNumberValue = () => {
-    let result = [];
-    if (buffer[offset] === 45) { // -
-      result.push(buffer[offset]);
+  const readNumberSign = () => {
+    let result;
+    if (
+      buffer[offset] === 43 || // +
+      buffer[offset] === 45    // -
+    ) {
+      result = buffer[offset];
       offset++;
     }
+    return result;
+  };
+
+  const readIntegerValue = () => {
+    let result = [];
+    let sign = readNumberSign();
+    if (sign !== void 0) result.push(sign);
+
+    for (; ;) {
+      let byte = buffer[offset];
+      if ((byte >= 48 && byte <= 57)) {
+        offset++;
+        result.push(byte);
+      } else if (
+        byte === 69 ||  // E
+        byte === 101 || // e
+        byte === 46 ||  // .
+        byte === 88 ||  // X
+        byte === 120    // x
+      ) {
+        throw `Unexpected token ${String.fromCharCode(byte)} for integer value`;
+      } else {
+        if (result.length) {
+          readSpace();
+          return +String.fromCharCode(...result);
+        } else {
+          throw 'Unexpected token ' + String.fromCharCode(byte);
+        }
+      }
+    }
+  };
+
+  const readDecimalValue = () => {
+    let result = [];
+    let sign = readNumberSign();
+    if (sign !== void 0) result.push(sign);
 
     for (; ;) {
       let byte = buffer[offset];
@@ -341,7 +380,8 @@ module.exports = (buffer, offset = 0) => {
   const readValue = () => readAnyOne(
     readHexadecimalValue, // This coming before readNumberValue is important, unfortunately
     readEnotationValue,   // This also needs to come before readNumberValue
-    readNumberValue,
+    readDecimalValue,
+    readIntegerValue,
     readStringValue,
     readBooleanValue,
     readListValue,
@@ -375,11 +415,22 @@ module.exports = (buffer, offset = 0) => {
 
   const readEnumItem = () => {
     let name = readName();
-    let value = readAssign();
+    let value = readEnumValue();
     readComma();
     let result = {name};
     if (value !== void 0) result.value = value;
     return result;
+  };
+
+  const readEnumValue = () => {
+    let beginning = offset;
+    try {
+      readCharCode(61); // =
+    } catch (ignore) {
+      offset = beginning;
+      return;
+    }
+    return readAnyOne(readHexadecimalValue, readIntegerValue);
   };
 
   const readAssign = () => {
@@ -409,7 +460,7 @@ module.exports = (buffer, offset = 0) => {
   const readStructLikeItem = () => {
     let id;
     try {
-      id = readNumberValue();
+      id = readIntegerValue();
       readCharCode(58); // :
     } catch (err) {
 
