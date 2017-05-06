@@ -460,7 +460,7 @@ module.exports = (buffer, offset = 0) => {
   const readStructLikeItem = () => {
     let id;
     try {
-      id = readIntegerValue();
+      id = readAnyOne(readHexadecimalValue, readIntegerValue);
       readCharCode(58); // :
     } catch (err) {
 
