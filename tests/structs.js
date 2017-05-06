@@ -488,8 +488,7 @@ describe('structs', function() {
     done();
   });
 
-  // TODO: OOMs the VM
-  it.skip('does not parse a struct containing a field with invalid default', function(done) {
+  it('does not parse a struct containing a field with invalid default', function(done) {
     const content = `
       struct Test {
         1: string test = 'test
@@ -500,8 +499,7 @@ describe('structs', function() {
     done();
   });
 
-  // TODO: OOMs the VM
-  it.skip('does not parse a struct containing a field with default containing mixed quotes', function(done) {
+  it('does not parse a struct containing a field with default containing mixed quotes', function(done) {
     const content = `
       struct Test {
         1: string test = 'test"
