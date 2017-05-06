@@ -1961,7 +1961,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a struct containing a field with decimal FieldID', function(done) {
+    it('does not parse a struct containing a field with decimal FieldID', function(done) {
       const content = `
         struct Test {
           1.2: string test
