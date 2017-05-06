@@ -723,6 +723,43 @@ describe('thriftParser', function() {
       done();
     });
 
+    it('parses a const for Map type with `;` separator (ListSeparator)', function(done) {
+      const content = `
+        const map<i32, string> test = { 1: 'a'; 2: 'b'; 3: 'c' }
+      `;
+
+      const expected = {
+        const: {
+          test: {
+            type: {
+              name: 'map',
+              keyType: 'i32',
+              valueType: 'string'
+            },
+            value: [
+              {
+                key: 1,
+                value: 'a'
+              },
+              {
+                key: 2,
+                value: 'b'
+              },
+              {
+                key: 3,
+                value: 'c'
+              }
+            ]
+          }
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
     it('does not parse an invalid Map type', function(done) {
       const content = `
         const map<i32> test = { 1: 'a', 2: 'b', 3: 'c' }
@@ -764,6 +801,29 @@ describe('thriftParser', function() {
       done();
     });
 
+    it('parses a const for Set type with `;` separator (ListSeparator)', function(done) {
+      const content = `
+        const set<i32> test = [ 1; 2; 3 ]
+      `;
+
+      const expected = {
+        const: {
+          test: {
+            type: {
+              name: 'set',
+              valueType: 'i32'
+            },
+            value: [1, 2, 3]
+          }
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
     it('does not parse an invalid Set type', function(done) {
       const content = `
         const set<i32, string> test = [ 1, 2, 3 ]
@@ -785,6 +845,29 @@ describe('thriftParser', function() {
     it('parses a const as an array for List types', function(done) {
       const content = `
         const list<i32> test = [ 1, 2, 3 ]
+      `;
+
+      const expected = {
+        const: {
+          test: {
+            type: {
+              name: 'list',
+              valueType: 'i32'
+            },
+            value: [1, 2, 3]
+          }
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a const for List type with `;` separator (ListSeparator)', function(done) {
+      const content = `
+        const list<i32> test = [ 1; 2; 3 ]
       `;
 
       const expected = {
