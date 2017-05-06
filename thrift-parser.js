@@ -477,7 +477,7 @@ module.exports = (source, offset = 0) => {
   const readStructLikeItem = () => {
     let id;
     try {
-      id = readIntegerValue();
+      id = readAnyOne(readHexadecimalValue, readIntegerValue);
       readChar(':');
     } catch (err) {
 

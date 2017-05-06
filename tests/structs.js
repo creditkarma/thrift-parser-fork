@@ -205,7 +205,7 @@ describe('structs', function() {
     done();
   });
 
-  it.skip('parses a struct containing a field with a hex FieldID', function(done) {
+  it('parses a struct containing a field with a hex FieldID', function(done) {
     const content = `
       struct Test {
         0x01: string test1
