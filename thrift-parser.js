@@ -341,7 +341,8 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('const');
     let type = readType();
     let name = readName();
-    let value = readAssign();
+    readCharCode(61);
+    let value = readValue();
     readComma();
     return {subject, type, name, value};
   };

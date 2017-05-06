@@ -513,7 +513,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a const without assignment', function(done) {
+    it('does not parse a const without assignment', function(done) {
       const content = `
         const string test
       `;
