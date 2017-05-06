@@ -3500,7 +3500,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a exception containing a field with a hex FieldID', function(done) {
+    it('parses a exception containing a field with a hex FieldID', function(done) {
       const content = `
         exception Test {
           0x01: string test1
@@ -3550,7 +3550,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a exception containing a field with a positive FieldID with `+`', function(done) {
+    it('parses a exception containing a field with a positive FieldID with `+`', function(done) {
       const content = `
         exception Test {
           +1: string test1
@@ -3561,7 +3561,7 @@ describe('thriftParser', function() {
         exception: {
           Test: [
             {
-              id: -1,
+              id: 1,
               type: 'string',
               name: 'test1'
             }
@@ -3576,7 +3576,7 @@ describe('thriftParser', function() {
     });
 
     // TODO: Remove undefined field in output
-    it.skip('parses a exception containing a field without a FieldID', function(done) {
+    it('parses a exception containing a field without a FieldID', function(done) {
       const content = `
         exception Test {
           string test1
@@ -3600,7 +3600,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a exception containing a field without a FieldID but with required', function(done) {
+    it('parses a exception containing a field without a FieldID but with required', function(done) {
       const content = `
         exception Test {
           required string test1
@@ -3625,7 +3625,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a exception containing mixed fields with/without a FieldID', function(done) {
+    it('parses a exception containing mixed fields with/without a FieldID', function(done) {
       const content = `
         exception Test {
           string test1
@@ -3785,7 +3785,7 @@ describe('thriftParser', function() {
     });
 
     // TODO: OOMs the VM
-    it.skip('does not parse a exception containing a field with invalid default', function(done) {
+    it('does not parse a exception containing a field with invalid default', function(done) {
       const content = `
         exception Test {
           1: string test = 'test
@@ -3797,7 +3797,7 @@ describe('thriftParser', function() {
     });
 
     // TODO: OOMs the VM
-    it.skip('does not parse a exception containing a field with default containing mixed quotes', function(done) {
+    it('does not parse a exception containing a field with default containing mixed quotes', function(done) {
       const content = `
         exception Test {
           1: string test = 'test"
@@ -3830,7 +3830,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a exception containing a field with decimal FieldID', function(done) {
+    it('does not parse a exception containing a field with decimal FieldID', function(done) {
       const content = `
         exception Test {
           1.2: string test
@@ -3891,7 +3891,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a exception containing a field with an invalid Map type', function(done) {
+    it('does not parse a exception containing a field with an invalid Map type', function(done) {
       const content = `
         exception Test {
           1: map<i16> test
@@ -3902,7 +3902,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a exception containing a field with a Map type but invalid default', function(done) {
+    it('does not parse a exception containing a field with a Map type but invalid default', function(done) {
       const content = `
         exception Test {
           1: map<i16, string> test = [1,2]
@@ -3945,7 +3945,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a exception containing a field with an invalid Set type', function(done) {
+    it('does not parse a exception containing a field with an invalid Set type', function(done) {
       const content = `
         exception Test {
           1: set<i16, string> test = [1,2]
@@ -3956,7 +3956,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a exception containing a field with a Set type but invalid default', function(done) {
+    it('does not parse a exception containing a field with a Set type but invalid default', function(done) {
       const content = `
         exception Test {
           1: set<i16> test = { 1: 'a', 2: 'b' }
@@ -3999,7 +3999,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a exception containing a field with an invalid List type', function(done) {
+    it('does not parse a exception containing a field with an invalid List type', function(done) {
       const content = `
         exception Test {
           1: list<i16, string> test = [1,2]
@@ -4010,7 +4010,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a exception containing a field with a List type but invalid default', function(done) {
+    it('does not parse a exception containing a field with a List type but invalid default', function(done) {
       const content = `
         exception Test {
           1: list<i16> test = { 1: 'a', 2: 'b' }
