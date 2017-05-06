@@ -191,12 +191,46 @@ module.exports = (source, offset = 0) => {
     return value;
   };
 
-  const readNumberValue = () => {
-    let result = [];
-    if (source[offset] === '-') {
-      result.push(source[offset]);
+  const readNumberSign = () => {
+    let result;
+    if (source[offset] === '+' || source[offset] === '-') {
+      result = source[offset];
       offset++;
     }
+    return result;
+  };
+
+  const readIntegerValue = () => {
+    let result = [];
+    let sign = readNumberSign();
+    if (sign !== void 0) result.push(sign);
+
+    for (; ;) {
+      let byte = source[offset];
+      if ((byte >= '0' && byte <= '9')) {
+        offset++;
+        result.push(byte);
+      } else if (
+        byte === 'E' || byte === 'e' ||
+        byte === 'X' || byte === 'x' ||
+        byte === '.'
+      ) {
+        throw `Unexpected token ${byte} for integer value`;
+      } else {
+        if (result.length) {
+          readSpace();
+          return +result.join('');
+        } else {
+          throw 'Unexpected token ' + byte;
+        }
+      }
+    }
+  };
+
+  const readDecimalValue = () => {
+    let result = [];
+    let sign = readNumberSign();
+    if (sign !== void 0) result.push(sign);
 
     for (;;) {
       let byte = source[offset];
@@ -361,7 +395,8 @@ module.exports = (source, offset = 0) => {
   const readValue = () => readAnyOne(
     readHexadecimalValue, // This coming before readNumberValue is important, unfortunately
     readEnotationValue,   // This also needs to come before readNumberValue
-    readNumberValue,
+    readDecimalValue,
+    readIntegerValue,
     readStringValue,
     readBooleanValue,
     readListValue,
@@ -395,11 +430,22 @@ module.exports = (source, offset = 0) => {
 
   const readEnumItem = () => {
     let name = readName();
-    let value = readAssign();
+    let value = readEnumValue();
     readComma();
     let result = {name};
     if (value !== void 0) result.value = value;
     return result;
+  };
+
+  const readEnumValue = () => {
+    let beginning = offset;
+    try {
+      readChar('=');
+    } catch (ignore) {
+      offset = beginning;
+      return;
+    }
+    return readAnyOne(readHexadecimalValue, readIntegerValue);
   };
 
   const readAssign = () => {
@@ -431,7 +477,7 @@ module.exports = (source, offset = 0) => {
   const readStructLikeItem = () => {
     let id;
     try {
-      id = readNumberValue();
+      id = readIntegerValue();
       readChar(':');
     } catch (err) {
 
