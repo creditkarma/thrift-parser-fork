@@ -593,7 +593,7 @@ describe('structs', function() {
     done();
   });
 
-  it.skip('does not parse a struct containing a field with an invalid Map type', function(done) {
+  it('does not parse a struct containing a field with an invalid Map type', function(done) {
     const content = `
       struct Test {
         1: map<i16> test
@@ -604,7 +604,7 @@ describe('structs', function() {
     done();
   });
 
-  it.skip('does not parse a struct containing a field with a Map type but invalid default', function(done) {
+  it('does not parse a struct containing a field with a Map type but invalid default', function(done) {
     const content = `
       struct Test {
         1: map<i16, string> test = [1,2]
@@ -647,7 +647,7 @@ describe('structs', function() {
     done();
   });
 
-  it.skip('does not parse a struct containing a field with an invalid Set type', function(done) {
+  it('does not parse a struct containing a field with an invalid Set type', function(done) {
     const content = `
       struct Test {
         1: set<i16, string> test = [1,2]
@@ -658,7 +658,7 @@ describe('structs', function() {
     done();
   });
 
-  it.skip('does not parse a struct containing a field with a Set type but invalid default', function(done) {
+  it('does not parse a struct containing a field with a Set type but invalid default', function(done) {
     const content = `
       struct Test {
         1: set<i16> test = { 1: 'a', 2: 'b' }
@@ -701,7 +701,7 @@ describe('structs', function() {
     done();
   });
 
-  it.skip('does not parse a struct containing a field with an invalid List type', function(done) {
+  it('does not parse a struct containing a field with an invalid List type', function(done) {
     const content = `
       struct Test {
         1: list<i16, string> test = [1,2]
@@ -712,7 +712,7 @@ describe('structs', function() {
     done();
   });
 
-  it.skip('does not parse a struct containing a field with a List type but invalid default', function(done) {
+  it('does not parse a struct containing a field with a List type but invalid default', function(done) {
     const content = `
       struct Test {
         1: list<i16> test = { 1: 'a', 2: 'b' }
