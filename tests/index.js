@@ -46,8 +46,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: Make this pass
-    it.skip('parses a dot.separated scope', function(done) {
+    it('parses a dot.separated scope', function(done) {
       const content = `
         namespace js.noexist test
       `;
@@ -202,13 +201,50 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: Make this pass
-    it.skip('does not parse paths wrapped in mixed-quotes (Literal)', function(done) {
+    it('does not parse paths wrapped in mixed-quotes (Literal)', function(done) {
       const content = `
          include 'test"
       `;
 
       expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('parses a double-quote inside a single-quoted value (Literal)', function(done) {
+      const content = `
+         include 'te"st'
+      `;
+
+      const expected = {
+        include: {
+          'te"st': {
+            path: 'te"st'
+          }
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a single-quote inside a double-quoted value (Literal)', function(done) {
+      const content = `
+         include "te'st"
+      `;
+
+      const expected = {
+        include: {
+          "te'st": {
+            path: "te'st"
+          }
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
       done();
     });
   });
@@ -318,7 +354,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an invalid Map typedef', function(done) {
+    it('does not parse an invalid Map typedef', function(done) {
       const content = `
         typedef map<string> Test;
       `;
@@ -358,7 +394,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an invalid Set typedef', function(done) {
+    it('does not parse an invalid Set typedef', function(done) {
       const content = `
         typedef set<string, string> Test;
       `;
@@ -398,7 +434,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an invalid List typedef', function(done) {
+    it('does not parse an invalid List typedef', function(done) {
       const content = `
         typedef list<string, string> Test;
       `;
@@ -477,7 +513,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a const without assignment', function(done) {
+    it('does not parse a const without assignment', function(done) {
       const content = `
         const string test
       `;
@@ -641,8 +677,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: this currently OOMs V8
-    it.skip('does not parse a const with a value wrapped in mixed-quotes', function(done) {
+    it('does not parse a const with a value wrapped in mixed-quotes', function(done) {
       const content = `
         const string test = "hello world'
       `;
@@ -688,7 +723,44 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an invalid Map type', function(done) {
+    it('parses a const for Map type with `;` separator (ListSeparator)', function(done) {
+      const content = `
+        const map<i32, string> test = { 1: 'a'; 2: 'b'; 3: 'c' }
+      `;
+
+      const expected = {
+        const: {
+          test: {
+            type: {
+              name: 'map',
+              keyType: 'i32',
+              valueType: 'string'
+            },
+            value: [
+              {
+                key: 1,
+                value: 'a'
+              },
+              {
+                key: 2,
+                value: 'b'
+              },
+              {
+                key: 3,
+                value: 'c'
+              }
+            ]
+          }
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('does not parse an invalid Map type', function(done) {
       const content = `
         const map<i32> test = { 1: 'a', 2: 'b', 3: 'c' }
       `;
@@ -697,7 +769,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an invalid Map values', function(done) {
+    it('does not parse an invalid Map value', function(done) {
       const content = `
         const map<i32, string> test = [ 1, 2, 3]
       `;
@@ -729,7 +801,30 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an invalid Set type', function(done) {
+    it('parses a const for Set type with `;` separator (ListSeparator)', function(done) {
+      const content = `
+        const set<i32> test = [ 1; 2; 3 ]
+      `;
+
+      const expected = {
+        const: {
+          test: {
+            type: {
+              name: 'set',
+              valueType: 'i32'
+            },
+            value: [1, 2, 3]
+          }
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('does not parse an invalid Set type', function(done) {
       const content = `
         const set<i32, string> test = [ 1, 2, 3 ]
       `;
@@ -738,7 +833,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an invalid Set values', function(done) {
+    it('does not parse an invalid Set values', function(done) {
       const content = `
         const set<i32> test = { 1: 'a', 2: 'b', 3: 'c' }
       `;
@@ -770,7 +865,30 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an invalid List type', function(done) {
+    it('parses a const for List type with `;` separator (ListSeparator)', function(done) {
+      const content = `
+        const list<i32> test = [ 1; 2; 3 ]
+      `;
+
+      const expected = {
+        const: {
+          test: {
+            type: {
+              name: 'list',
+              valueType: 'i32'
+            },
+            value: [1, 2, 3]
+          }
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('does not parse an invalid List type', function(done) {
       const content = `
         const list<i32, string> test = [ 1, 2, 3 ]
       `;
@@ -779,7 +897,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an invalid List values', function(done) {
+    it('does not parse an invalid List values', function(done) {
       const content = `
         const list<i32> test = { 1: 'a', 2: 'b', 3: 'c' }
       `;
@@ -853,8 +971,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: fix values
-    it.skip('parses an enum without values', function(done) {
+    it('parses an enum without values', function(done) {
       const content = `
         enum Test {
           test1
@@ -887,8 +1004,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: fix values
-    it.skip('parses an enum with mixed values', function(done) {
+    it('parses an enum with mixed values', function(done) {
       const content = `
         enum Test {
           test1 = 1
@@ -1261,7 +1377,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with a string value assignment', function(done) {
+    it('does not parse an enum with a string value assignment', function(done) {
       const content = `
         enum Test {
           test1 = 'test'
@@ -1272,7 +1388,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with a decimal value assignment', function(done) {
+    it('does not parse an enum with a decimal value assignment', function(done) {
       const content = `
         enum Test {
           test1 = 1.2
@@ -1283,7 +1399,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with an e-notation value assignment', function(done) {
+    it('does not parse an enum with an e-notation value assignment', function(done) {
       const content = `
         enum Test {
           test1 = 1e2
@@ -1294,7 +1410,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with a Map value assignment', function(done) {
+    it('does not parse an enum with a Map value assignment', function(done) {
       const content = `
         enum Test {
           test1 = {'test':'test'}
@@ -1305,7 +1421,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse an enum with a Set/List value assignment', function(done) {
+    it('does not parse an enum with a Set/List value assignment', function(done) {
       const content = `
         enum Test {
           test1 = [1,2,3]
@@ -1518,7 +1634,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a struct containing a field with a hex FieldID', function(done) {
+    it('parses a struct containing a field with a hex FieldID', function(done) {
       const content = `
         struct Test {
           0x01: string test1
@@ -1568,7 +1684,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a struct containing a field with a positive FieldID with `+`', function(done) {
+    it('parses a struct containing a field with a positive FieldID with `+`', function(done) {
       const content = `
         struct Test {
           +1: string test1
@@ -1579,7 +1695,7 @@ describe('thriftParser', function() {
         struct: {
           Test: [
             {
-              id: -1,
+              id: 1,
               type: 'string',
               name: 'test1'
             }
@@ -1593,8 +1709,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: Remove undefined field in output
-    it.skip('parses a struct containing a field without a FieldID', function(done) {
+    it('parses a struct containing a field without a FieldID', function(done) {
       const content = `
         struct Test {
           string test1
@@ -1618,7 +1733,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a struct containing a field without a FieldID but with required', function(done) {
+    it('parses a struct containing a field without a FieldID but with required', function(done) {
       const content = `
         struct Test {
           required string test1
@@ -1643,7 +1758,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a struct containing mixed fields with/without a FieldID', function(done) {
+    it('parses a struct containing mixed fields with/without a FieldID', function(done) {
       const content = `
         struct Test {
           string test1
@@ -1802,8 +1917,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: OOMs the VM
-    it.skip('does not parse a struct containing a field with invalid default', function(done) {
+    it('does not parse a struct containing a field with invalid default', function(done) {
       const content = `
         struct Test {
           1: string test = 'test
@@ -1814,8 +1928,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: OOMs the VM
-    it.skip('does not parse a struct containing a field with default containing mixed quotes', function(done) {
+    it('does not parse a struct containing a field with default containing mixed quotes', function(done) {
       const content = `
         struct Test {
           1: string test = 'test"
@@ -1848,7 +1961,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a struct containing a field with decimal FieldID', function(done) {
+    it('does not parse a struct containing a field with decimal FieldID', function(done) {
       const content = `
         struct Test {
           1.2: string test
@@ -1909,7 +2022,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a struct containing a field with an invalid Map type', function(done) {
+    it('does not parse a struct containing a field with an invalid Map type', function(done) {
       const content = `
         struct Test {
           1: map<i16> test
@@ -1920,7 +2033,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a struct containing a field with a Map type but invalid default', function(done) {
+    it('does not parse a struct containing a field with a Map type but invalid default', function(done) {
       const content = `
         struct Test {
           1: map<i16, string> test = [1,2]
@@ -1963,7 +2076,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a struct containing a field with an invalid Set type', function(done) {
+    it('does not parse a struct containing a field with an invalid Set type', function(done) {
       const content = `
         struct Test {
           1: set<i16, string> test = [1,2]
@@ -1974,7 +2087,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a struct containing a field with a Set type but invalid default', function(done) {
+    it('does not parse a struct containing a field with a Set type but invalid default', function(done) {
       const content = `
         struct Test {
           1: set<i16> test = { 1: 'a', 2: 'b' }
@@ -2017,7 +2130,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a struct containing a field with an invalid List type', function(done) {
+    it('does not parse a struct containing a field with an invalid List type', function(done) {
       const content = `
         struct Test {
           1: list<i16, string> test = [1,2]
@@ -2028,7 +2141,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('does not parse a struct containing a field with a List type but invalid default', function(done) {
+    it('does not parse a struct containing a field with a List type but invalid default', function(done) {
       const content = `
         struct Test {
           1: list<i16> test = { 1: 'a', 2: 'b' }
@@ -2234,6 +2347,1875 @@ describe('thriftParser', function() {
 
       const expected = {
         struct: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'te.st_1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+  });
+
+  // TODO: Need to fix union
+  describe.skip('union', function() {
+
+    it('parses simple union', function(done) {
+      const content = `
+        union Test {
+          1: i16 test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'i16',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with a required field', function(done) {
+      const content = `
+        union Test {
+          1: required i16 test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'i16',
+              name: 'test1',
+              option: 'required'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with an optional field', function(done) {
+      const content = `
+        union Test {
+          1: optional i16 test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'i16',
+              name: 'test1',
+              option: 'optional'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with mixed option fields', function(done) {
+      const content = `
+        union Test {
+          1: required i16 test1
+          2: i16 test2
+          3: optional i16 test3
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'i16',
+              name: 'test1',
+              option: 'required'
+            },
+            {
+              id: 2,
+              type: 'i16',
+              name: 'test2'
+            },
+            {
+              id: 3,
+              type: 'i16',
+              name: 'test3',
+              option: 'optional'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses custom types in union field', function(done) {
+      const content = `
+        union Test {
+          1: TestType test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'TestType',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with default values', function(done) {
+      const content = `
+        union Test {
+          1: string test1 = 'test'
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1',
+              defaultValue: 'test'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with mixed default/no-default values', function(done) {
+      const content = `
+        union Test {
+          1: string test1 = 'test'
+          2: i16 test2
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1',
+              defaultValue: 'test'
+            },
+            {
+              id: 2,
+              type: 'i16',
+              name: 'test2'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it.skip('parses a union containing a field with a hex FieldID', function(done) {
+      const content = `
+        union Test {
+          0x01: string test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union containing a field with a negative FieldID', function(done) {
+      const content = `
+        union Test {
+          -1: string test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: -1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it.skip('parses a union containing a field with a positive FieldID with `+`', function(done) {
+      const content = `
+        union Test {
+          +1: string test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: -1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    // TODO: Remove undefined field in output
+    it.skip('parses a union containing a field without a FieldID', function(done) {
+      const content = `
+        union Test {
+          string test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it.skip('parses a union containing a field without a FieldID but with required', function(done) {
+      const content = `
+        union Test {
+          required string test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              type: 'string',
+              name: 'test1',
+              option: 'required'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it.skip('parses a union containing mixed fields with/without a FieldID', function(done) {
+      const content = `
+        union Test {
+          string test1
+          2: string test2
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              type: 'string',
+              name: 'test1'
+            },
+            {
+              id: 2,
+              type: 'string',
+              name: 'test2'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with values that end in `,` (ListSeparator)', function(done) {
+      const content = `
+        union Test {
+          1: string test1,
+          2: string test2 = 'test',
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            },
+            {
+              id: 2,
+              type: 'string',
+              name: 'test2',
+              defaultValue: 'test'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with values that end in `;` (ListSeparator)', function(done) {
+      const content = `
+        union Test {
+          1: string test1;
+          2: string test2 = 'test';
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            },
+            {
+              id: 2,
+              type: 'string',
+              name: 'test2',
+              defaultValue: 'test'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with values that end in `;` and `,` (ListSeparator)', function(done) {
+      const content = `
+        union Test {
+          1: string test1,
+          2: string test2 = 'test';
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            },
+            {
+              id: 2,
+              type: 'string',
+              name: 'test2',
+              defaultValue: 'test'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('does not parse a union containing a field without a type', function(done) {
+      const content = `
+        union Test {
+          1: test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a union containing a field with required & without a type', function(done) {
+      const content = `
+        union Test {
+          1: required test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a union containing a field with default & without a type', function(done) {
+      const content = `
+        union Test {
+          1: test = 'test'
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    // TODO: OOMs the VM
+    it.skip('does not parse a union containing a field with invalid default', function(done) {
+      const content = `
+        union Test {
+          1: string test = 'test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    // TODO: OOMs the VM
+    it.skip('does not parse a union containing a field with default containing mixed quotes', function(done) {
+      const content = `
+        union Test {
+          1: string test = 'test"
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a union containing a field with string FieldID', function(done) {
+      const content = `
+        union Test {
+          test: string test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a union containing a field with e-notation FieldID', function(done) {
+      const content = `
+        union Test {
+          1e2: string test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it.skip('does not parse a union containing a field with decimal FieldID', function(done) {
+      const content = `
+        union Test {
+          1.2: string test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a union containing a field with invalid option', function(done) {
+      const content = `
+        union Test {
+          1: failure string test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('parses a union containing a field with a Map type', function(done) {
+      const content = `
+        union Test {
+          1: map<i16, string> test = { 1: 'a', 2: 'b' }
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: {
+                name: 'map',
+                keyType: 'i16',
+                valueType: 'string'
+              },
+              name: 'test',
+              defaultValue: [
+                {
+                  key: 1,
+                  value: 'a'
+                },
+                {
+                  key: 2,
+                  value: 'b'
+                }
+              ]
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it.skip('does not parse a union containing a field with an invalid Map type', function(done) {
+      const content = `
+        union Test {
+          1: map<i16> test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it.skip('does not parse a union containing a field with a Map type but invalid default', function(done) {
+      const content = `
+        union Test {
+          1: map<i16, string> test = [1,2]
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('parses a union containing a field with a Set type', function(done) {
+      const content = `
+        union Test {
+          1: set<i16> test = [1,2]
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: {
+                name: 'set',
+                valueType: 'i16'
+              },
+              name: 'test',
+              defaultValue: [
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it.skip('does not parse a union containing a field with an invalid Set type', function(done) {
+      const content = `
+        union Test {
+          1: set<i16, string> test = [1,2]
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it.skip('does not parse a union containing a field with a Set type but invalid default', function(done) {
+      const content = `
+        union Test {
+          1: set<i16> test = { 1: 'a', 2: 'b' }
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('parses a union containing a field with a List type', function(done) {
+      const content = `
+        union Test {
+          1: list<i16> test = [1,2]
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: {
+                name: 'list',
+                valueType: 'i16'
+              },
+              name: 'test',
+              defaultValue: [
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it.skip('does not parse a union containing a field with an invalid List type', function(done) {
+      const content = `
+        union Test {
+          1: list<i16, string> test = [1,2]
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it.skip('does not parse a union containing a field with a List type but invalid default', function(done) {
+      const content = `
+        union Test {
+          1: list<i16> test = { 1: 'a', 2: 'b' }
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a union containing a field with an invalid default assignment', function(done) {
+      const content = `
+        union Test {
+          1: string test =
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('parses a union that starts with `_` (Identifier)', function(done) {
+      const content = `
+        union _Test {
+          1: string test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          _Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union containing `_` (Identifier)', function(done) {
+      const content = `
+        union Te_st {
+          1: string test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Te_st: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union containing `.` (Identifier)', function(done) {
+      const content = `
+        union Te.st {
+          1: string test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          'Te.st': [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union containing `.`, `_`, letters and numbers (Identifier)', function(done) {
+      const content = `
+        union Te.st_123 {
+          1: string test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          'Te.st_123': [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with a field that starts with `_` (Identifier)', function(done) {
+      const content = `
+        union Test {
+          1: string _test1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: '_test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with a field containing `_` (Identifier)', function(done) {
+      const content = `
+        union Test {
+          1: string test_1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test_1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with a field containing `.` (Identifier)', function(done) {
+      const content = `
+        union Test {
+          1: string test.1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test.1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a union with a field containing `.`, `_`, letters and numbers (Identifier)', function(done) {
+      const content = `
+        union Test {
+          1: string te.st_1
+        }
+      `;
+
+      const expected = {
+        union: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'te.st_1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+  });
+
+  describe('exception', function() {
+
+    it('parses simple exception', function(done) {
+      const content = `
+        exception Test {
+          1: i16 test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'i16',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with a required field', function(done) {
+      const content = `
+        exception Test {
+          1: required i16 test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'i16',
+              name: 'test1',
+              option: 'required'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with an optional field', function(done) {
+      const content = `
+        exception Test {
+          1: optional i16 test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'i16',
+              name: 'test1',
+              option: 'optional'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with mixed option fields', function(done) {
+      const content = `
+        exception Test {
+          1: required i16 test1
+          2: i16 test2
+          3: optional i16 test3
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'i16',
+              name: 'test1',
+              option: 'required'
+            },
+            {
+              id: 2,
+              type: 'i16',
+              name: 'test2'
+            },
+            {
+              id: 3,
+              type: 'i16',
+              name: 'test3',
+              option: 'optional'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses custom types in exception field', function(done) {
+      const content = `
+        exception Test {
+          1: TestType test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'TestType',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with default values', function(done) {
+      const content = `
+        exception Test {
+          1: string test1 = 'test'
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1',
+              defaultValue: 'test'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with mixed default/no-default values', function(done) {
+      const content = `
+        exception Test {
+          1: string test1 = 'test'
+          2: i16 test2
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1',
+              defaultValue: 'test'
+            },
+            {
+              id: 2,
+              type: 'i16',
+              name: 'test2'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception containing a field with a hex FieldID', function(done) {
+      const content = `
+        exception Test {
+          0x01: string test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception containing a field with a negative FieldID', function(done) {
+      const content = `
+        exception Test {
+          -1: string test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: -1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception containing a field with a positive FieldID with `+`', function(done) {
+      const content = `
+        exception Test {
+          +1: string test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    // TODO: Remove undefined field in output
+    it('parses a exception containing a field without a FieldID', function(done) {
+      const content = `
+        exception Test {
+          string test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception containing a field without a FieldID but with required', function(done) {
+      const content = `
+        exception Test {
+          required string test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              type: 'string',
+              name: 'test1',
+              option: 'required'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception containing mixed fields with/without a FieldID', function(done) {
+      const content = `
+        exception Test {
+          string test1
+          2: string test2
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              type: 'string',
+              name: 'test1'
+            },
+            {
+              id: 2,
+              type: 'string',
+              name: 'test2'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with values that end in `,` (ListSeparator)', function(done) {
+      const content = `
+        exception Test {
+          1: string test1,
+          2: string test2 = 'test',
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            },
+            {
+              id: 2,
+              type: 'string',
+              name: 'test2',
+              defaultValue: 'test'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with values that end in `;` (ListSeparator)', function(done) {
+      const content = `
+        exception Test {
+          1: string test1;
+          2: string test2 = 'test';
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            },
+            {
+              id: 2,
+              type: 'string',
+              name: 'test2',
+              defaultValue: 'test'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with values that end in `;` and `,` (ListSeparator)', function(done) {
+      const content = `
+        exception Test {
+          1: string test1,
+          2: string test2 = 'test';
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            },
+            {
+              id: 2,
+              type: 'string',
+              name: 'test2',
+              defaultValue: 'test'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('does not parse a exception containing a field without a type', function(done) {
+      const content = `
+        exception Test {
+          1: test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with required & without a type', function(done) {
+      const content = `
+        exception Test {
+          1: required test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with default & without a type', function(done) {
+      const content = `
+        exception Test {
+          1: test = 'test'
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    // TODO: OOMs the VM
+    it('does not parse a exception containing a field with invalid default', function(done) {
+      const content = `
+        exception Test {
+          1: string test = 'test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    // TODO: OOMs the VM
+    it('does not parse a exception containing a field with default containing mixed quotes', function(done) {
+      const content = `
+        exception Test {
+          1: string test = 'test"
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with string FieldID', function(done) {
+      const content = `
+        exception Test {
+          test: string test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with e-notation FieldID', function(done) {
+      const content = `
+        exception Test {
+          1e2: string test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with decimal FieldID', function(done) {
+      const content = `
+        exception Test {
+          1.2: string test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with invalid option', function(done) {
+      const content = `
+        exception Test {
+          1: failure string test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('parses a exception containing a field with a Map type', function(done) {
+      const content = `
+        exception Test {
+          1: map<i16, string> test = { 1: 'a', 2: 'b' }
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: {
+                name: 'map',
+                keyType: 'i16',
+                valueType: 'string'
+              },
+              name: 'test',
+              defaultValue: [
+                {
+                  key: 1,
+                  value: 'a'
+                },
+                {
+                  key: 2,
+                  value: 'b'
+                }
+              ]
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('does not parse a exception containing a field with an invalid Map type', function(done) {
+      const content = `
+        exception Test {
+          1: map<i16> test
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with a Map type but invalid default', function(done) {
+      const content = `
+        exception Test {
+          1: map<i16, string> test = [1,2]
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('parses a exception containing a field with a Set type', function(done) {
+      const content = `
+        exception Test {
+          1: set<i16> test = [1,2]
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: {
+                name: 'set',
+                valueType: 'i16'
+              },
+              name: 'test',
+              defaultValue: [
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('does not parse a exception containing a field with an invalid Set type', function(done) {
+      const content = `
+        exception Test {
+          1: set<i16, string> test = [1,2]
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with a Set type but invalid default', function(done) {
+      const content = `
+        exception Test {
+          1: set<i16> test = { 1: 'a', 2: 'b' }
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('parses a exception containing a field with a List type', function(done) {
+      const content = `
+        exception Test {
+          1: list<i16> test = [1,2]
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: {
+                name: 'list',
+                valueType: 'i16'
+              },
+              name: 'test',
+              defaultValue: [
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('does not parse a exception containing a field with an invalid List type', function(done) {
+      const content = `
+        exception Test {
+          1: list<i16, string> test = [1,2]
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with a List type but invalid default', function(done) {
+      const content = `
+        exception Test {
+          1: list<i16> test = { 1: 'a', 2: 'b' }
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('does not parse a exception containing a field with an invalid default assignment', function(done) {
+      const content = `
+        exception Test {
+          1: string test =
+        }
+      `;
+
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
+
+    it('parses a exception that starts with `_` (Identifier)', function(done) {
+      const content = `
+        exception _Test {
+          1: string test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          _Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception containing `_` (Identifier)', function(done) {
+      const content = `
+        exception Te_st {
+          1: string test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Te_st: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception containing `.` (Identifier)', function(done) {
+      const content = `
+        exception Te.st {
+          1: string test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          'Te.st': [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception containing `.`, `_`, letters and numbers (Identifier)', function(done) {
+      const content = `
+        exception Te.st_123 {
+          1: string test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          'Te.st_123': [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with a field that starts with `_` (Identifier)', function(done) {
+      const content = `
+        exception Test {
+          1: string _test1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: '_test1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with a field containing `_` (Identifier)', function(done) {
+      const content = `
+        exception Test {
+          1: string test_1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test_1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with a field containing `.` (Identifier)', function(done) {
+      const content = `
+        exception Test {
+          1: string test.1
+        }
+      `;
+
+      const expected = {
+        exception: {
+          Test: [
+            {
+              id: 1,
+              type: 'string',
+              name: 'test.1'
+            }
+          ]
+        }
+      };
+
+      const ast = thriftParser(content);
+
+      expect(ast).toEqual(expected);
+      done();
+    });
+
+    it('parses a exception with a field containing `.`, `_`, letters and numbers (Identifier)', function(done) {
+      const content = `
+        exception Test {
+          1: string te.st_1
+        }
+      `;
+
+      const expected = {
+        exception: {
           Test: [
             {
               id: 1,

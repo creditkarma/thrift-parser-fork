@@ -10,6 +10,7 @@ class ThriftFileParsingError extends Error {
 module.exports = (buffer, offset = 0) => {
 
   buffer = new Buffer(buffer);
+  let containerType;
 
   const readAnyOne = (...args) => {
     let beginning = offset;
@@ -116,20 +117,22 @@ module.exports = (buffer, offset = 0) => {
   const readType = () => readAnyOne(readTypeMap, readTypeList, readTypeNormal);
 
   const readTypeMap = () => {
-    let name = readName();
+    let name = readKeyword('map');
     readCharCode(60); // <
     let keyType = readType();
     readComma();
     let valueType = readType();
     readCharCode(62); // >
+    containerType = name;
     return {name, keyType, valueType};
   };
 
   const readTypeList = () => {
-    let name = readName();
+    let name = readAnyOne(() => readKeyword('list'), () => readKeyword('set'));
     readCharCode(60); // <
     let valueType = readType();
     readCharCode(62); // >
+    containerType = name;
     return {name, valueType};
   };
 
@@ -159,7 +162,8 @@ module.exports = (buffer, offset = 0) => {
     byte === 95 ||                 // _
     (byte >= 65 && byte <= 90) ||  // A-Z
     (byte >= 48 && byte <= 57) ||  // 0-9
-    (byte === 42)                  // *
+    (byte === 42) ||               // *
+    (byte === 46)                  // .
       ) byte = buffer[offset + ++i];
     if (i === 0) throw 'Unexpected token';
     let value = buffer.toString('utf8', offset, offset += i);
@@ -167,12 +171,51 @@ module.exports = (buffer, offset = 0) => {
     return value;
   };
 
-  const readNumberValue = () => {
-    let result = [];
-    if (buffer[offset] === 45) { // -
-      result.push(buffer[offset]);
+  const readNumberSign = () => {
+    let result;
+    if (
+      buffer[offset] === 43 || // +
+      buffer[offset] === 45    // -
+    ) {
+      result = buffer[offset];
       offset++;
     }
+    return result;
+  };
+
+  const readIntegerValue = () => {
+    let result = [];
+    let sign = readNumberSign();
+    if (sign !== void 0) result.push(sign);
+
+    for (; ;) {
+      let byte = buffer[offset];
+      if ((byte >= 48 && byte <= 57)) {
+        offset++;
+        result.push(byte);
+      } else if (
+        byte === 69 ||  // E
+        byte === 101 || // e
+        byte === 46 ||  // .
+        byte === 88 ||  // X
+        byte === 120    // x
+      ) {
+        throw `Unexpected token ${String.fromCharCode(byte)} for integer value`;
+      } else {
+        if (result.length) {
+          readSpace();
+          return +String.fromCharCode(...result);
+        } else {
+          throw 'Unexpected token ' + String.fromCharCode(byte);
+        }
+      }
+    }
+  };
+
+  const readDecimalValue = () => {
+    let result = [];
+    let sign = readNumberSign();
+    if (sign !== void 0) result.push(sign);
 
     for (; ;) {
       let byte = buffer[offset];
@@ -276,13 +319,13 @@ module.exports = (buffer, offset = 0) => {
   const readStringValue = () => {
     let receiver = [];
     let start;
-    for (; ;) {
+    while (buffer[offset] != null) {
       let byte = buffer[offset++];
       if (receiver.length) {
         if (byte === start) { // " or '
           receiver.push(byte);
           readSpace();
-          return new Function('return ' + String.fromCharCode(...receiver))();
+          return String.fromCharCode(...receiver.slice(1, -1));
         } else if (byte === 92) { // \
           receiver.push(byte);
           offset++;
@@ -299,6 +342,7 @@ module.exports = (buffer, offset = 0) => {
         }
       }
     }
+    throw 'Unterminated string value';
   };
 
   const readListValue = () => {
@@ -309,6 +353,10 @@ module.exports = (buffer, offset = 0) => {
       return value;
     });
     readCharCode(93); // ]
+    if (containerType !== 'set' && containerType !== 'list') {
+      throw `Invalid ${containerType} value`;
+    }
+    containerType = undefined;
     return list;
   };
 
@@ -322,13 +370,18 @@ module.exports = (buffer, offset = 0) => {
       return {key, value};
     });
     readCharCode(125); // }
+    if (containerType !== 'map') {
+      throw `Invalid ${containerType} value`;
+    }
+    containerType = undefined;
     return list;
   };
 
   const readValue = () => readAnyOne(
     readHexadecimalValue, // This coming before readNumberValue is important, unfortunately
     readEnotationValue,   // This also needs to come before readNumberValue
-    readNumberValue,
+    readDecimalValue,
+    readIntegerValue,
     readStringValue,
     readBooleanValue,
     readListValue,
@@ -340,7 +393,8 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('const');
     let type = readType();
     let name = readName();
-    let value = readAssign();
+    readCharCode(61);
+    let value = readValue();
     readComma();
     return {subject, type, name, value};
   };
@@ -361,9 +415,22 @@ module.exports = (buffer, offset = 0) => {
 
   const readEnumItem = () => {
     let name = readName();
-    let value = readAssign();
+    let value = readEnumValue();
     readComma();
-    return {name, value};
+    let result = {name};
+    if (value !== void 0) result.value = value;
+    return result;
+  };
+
+  const readEnumValue = () => {
+    let beginning = offset;
+    try {
+      readCharCode(61); // =
+    } catch (ignore) {
+      offset = beginning;
+      return;
+    }
+    return readAnyOne(readHexadecimalValue, readIntegerValue);
   };
 
   const readAssign = () => {
@@ -393,7 +460,7 @@ module.exports = (buffer, offset = 0) => {
   const readStructLikeItem = () => {
     let id;
     try {
-      id = readNumberValue();
+      id = readAnyOne(readHexadecimalValue, readIntegerValue);
       readCharCode(58); // :
     } catch (err) {
 
@@ -404,7 +471,8 @@ module.exports = (buffer, offset = 0) => {
     let name = readName();
     let defaultValue = readAssign();
     readComma();
-    let result = {id, type, name};
+    let result = {type, name};
+    if (id !== void 0) result.id = id;
     if (option !== void 0) result.option = option;
     if (defaultValue !== void 0) result.defaultValue = defaultValue;
     return result;
@@ -464,16 +532,19 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readQuotation = () => {
+    let quoteMatch;
     if (buffer[offset] === 34 || buffer[offset] === 39) {
+      quoteMatch = buffer[offset];
       offset++;
     } else {
       throw 'include error';
     }
     let i = offset;
-    while (buffer[i] !== 34 && buffer[i] !== 39) {
+    // Read until it finds a matching quote or end-of-file
+    while (buffer[i] !== quoteMatch && buffer[i] != null) {
       i++;
     }
-    if (buffer[i] === 34 || buffer[i] === 39) {
+    if (buffer[i] === quoteMatch) {
       let value = buffer.toString('utf8', offset, i);
       offset = i + 1;
       return value;
