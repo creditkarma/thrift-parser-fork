@@ -1684,7 +1684,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    it.skip('parses a struct containing a field with a positive FieldID with `+`', function(done) {
+    it('parses a struct containing a field with a positive FieldID with `+`', function(done) {
       const content = `
         struct Test {
           +1: string test1
@@ -1695,7 +1695,7 @@ describe('thriftParser', function() {
         struct: {
           Test: [
             {
-              id: -1,
+              id: 1,
               type: 'string',
               name: 'test1'
             }
