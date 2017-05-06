@@ -465,16 +465,19 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readQuotation = () => {
+    let quoteMatch;
     if (buffer[offset] === 34 || buffer[offset] === 39) {
+      quoteMatch = buffer[offset];
       offset++;
     } else {
       throw 'include error';
     }
     let i = offset;
-    while (buffer[i] !== 34 && buffer[i] !== 39) {
+    // Read until it finds a matching quote or end-of-file
+    while (buffer[i] !== quoteMatch && buffer[i] != null) {
       i++;
     }
-    if (buffer[i] === 34 || buffer[i] === 39) {
+    if (buffer[i] === quoteMatch) {
       let value = buffer.toString('utf8', offset, i);
       offset = i + 1;
       return value;
