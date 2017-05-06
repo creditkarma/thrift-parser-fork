@@ -245,7 +245,7 @@ describe('consts', function() {
     done();
   });
 
-  it.skip('does not parse an invalid Map values', function(done) {
+  it('does not parse an invalid Map value', function(done) {
     const content = `
       const map<i32, string> test = [ 1, 2, 3]
     `;
@@ -286,7 +286,7 @@ describe('consts', function() {
     done();
   });
 
-  it.skip('does not parse an invalid Set values', function(done) {
+  it('does not parse an invalid Set value', function(done) {
     const content = `
       const set<i32> test = { 1: 'a', 2: 'b', 3: 'c' }
     `;
@@ -327,7 +327,7 @@ describe('consts', function() {
     done();
   });
 
-  it.skip('does not parse an invalid List values', function(done) {
+  it('does not parse an invalid List value', function(done) {
     const content = `
       const list<i32> test = { 1: 'a', 2: 'b', 3: 'c' }
     `;
