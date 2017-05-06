@@ -159,7 +159,8 @@ module.exports = (buffer, offset = 0) => {
     byte === 95 ||                 // _
     (byte >= 65 && byte <= 90) ||  // A-Z
     (byte >= 48 && byte <= 57) ||  // 0-9
-    (byte === 42)                  // *
+    (byte === 42) ||               // *
+    (byte === 46)                  // .
       ) byte = buffer[offset + ++i];
     if (i === 0) throw 'Unexpected token';
     let value = buffer.toString('utf8', offset, offset += i);

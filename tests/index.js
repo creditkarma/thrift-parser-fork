@@ -46,8 +46,7 @@ describe('thriftParser', function() {
       done();
     });
 
-    // TODO: Make this pass
-    it.skip('parses a dot.separated scope', function(done) {
+    it('parses a dot.separated scope', function(done) {
       const content = `
         namespace js.noexist test
       `;
