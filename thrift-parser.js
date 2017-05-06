@@ -116,7 +116,7 @@ module.exports = (buffer, offset = 0) => {
   const readType = () => readAnyOne(readTypeMap, readTypeList, readTypeNormal);
 
   const readTypeMap = () => {
-    let name = readName();
+    let name = readKeyword('map');
     readCharCode(60); // <
     let keyType = readType();
     readComma();
@@ -126,7 +126,7 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readTypeList = () => {
-    let name = readName();
+    let name = readAnyOne(() => readKeyword('list'), () => readKeyword('set'));
     readCharCode(60); // <
     let valueType = readType();
     readCharCode(62); // >
