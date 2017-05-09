@@ -844,7 +844,7 @@ describe('service function arguments', function() {
     done();
   });
 
-  it.skip('parses a service containing a function with arguments without FieldIDs', function(done) {
+  it('parses a service containing a function with arguments without FieldIDs', function(done) {
     const content = `
       service Test {
         void test(string test1, bool test2)
@@ -882,7 +882,7 @@ describe('service function arguments', function() {
     done();
   });
 
-  it.skip('parses a service containing a function with arguments with mixed FieldIDs', function(done) {
+  it('parses a service containing a function with arguments with mixed FieldIDs', function(done) {
     const content = `
       service Test {
         void test(string test1, 1: bool test2)
@@ -921,7 +921,7 @@ describe('service function arguments', function() {
     done();
   });
 
-  it.skip('parses a service containing a function with arguments using hexadecimal FieldIDs', function(done) {
+  it('parses a service containing a function with arguments using hexadecimal FieldIDs', function(done) {
     const content = `
       service Test {
         void test(0x01: string test1)
@@ -991,7 +991,7 @@ describe('service function arguments', function() {
     done();
   });
 
-  it.skip('parses a service containing a function argument with a positive FieldID with `+`', function(done) {
+  it('parses a service containing a function argument with a positive FieldID with `+`', function(done) {
     const content = `
       service Test {
         void test(+1: string test1)
@@ -1026,7 +1026,7 @@ describe('service function arguments', function() {
     done();
   });
 
-  it.skip('does not parse a service containing a function with arguments using decimal FieldIDs', function(done) {
+  it('does not parse a service containing a function with arguments using decimal FieldIDs', function(done) {
     const content = `
       service Test {
         void test(1.2: string test)
