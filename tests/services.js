@@ -126,7 +126,7 @@ describe('services', function() {
     done();
   });
 
-  it.skip('does not parse a service containing a function with invalid Map type', function(done) {
+  it('does not parse a service containing a function with invalid Map type', function(done) {
     const content = `
       service Test {
         map<i16> test()
@@ -169,7 +169,7 @@ describe('services', function() {
     done();
   });
 
-  it.skip('does not parse a service containing a function with invalid Set type', function(done) {
+  it('does not parse a service containing a function with invalid Set type', function(done) {
     const content = `
       service Test {
         set<i16, string> test()
@@ -212,7 +212,7 @@ describe('services', function() {
     done();
   });
 
-  it.skip('does not parse a service containing a function with invalid List type', function(done) {
+  it('does not parse a service containing a function with invalid List type', function(done) {
     const content = `
       service Test {
         list<i16, string> test()
