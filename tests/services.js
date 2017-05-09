@@ -1507,7 +1507,7 @@ describe('service function throws', function() {
     done();
   });
 
-  it.skip('parses a service containing a function with throws without FieldIDs', function(done) {
+  it('parses a service containing a function with throws without FieldIDs', function(done) {
     const content = `
       service Test {
         void test() throws (TestException1 test1, TestException2 test2)
@@ -1545,7 +1545,7 @@ describe('service function throws', function() {
     done();
   });
 
-  it.skip('parses a service containing a function with throws with mixed FieldIDs', function(done) {
+  it('parses a service containing a function with throws with mixed FieldIDs', function(done) {
     const content = `
       service Test {
         void test() throws (TestException1 test1, 1: TestException2 test2)
@@ -1584,7 +1584,7 @@ describe('service function throws', function() {
     done();
   });
 
-  it.skip('parses a service containing a function with throws using hexadecimal FieldIDs', function(done) {
+  it('parses a service containing a function with throws using hexadecimal FieldIDs', function(done) {
     const content = `
       service Test {
         void test() throws (0x01: string test1)
@@ -1654,7 +1654,7 @@ describe('service function throws', function() {
     done();
   });
 
-  it.skip('parses a service containing a function with throws using a positive FieldID with `+`', function(done) {
+  it('parses a service containing a function with throws using a positive FieldID with `+`', function(done) {
     const content = `
       service Test {
         void test() throws (+1: string test1)
@@ -1689,7 +1689,7 @@ describe('service function throws', function() {
     done();
   });
 
-  it.skip('does not parse a service containing a function with throws with decimal FieldIDs', function(done) {
+  it('does not parse a service containing a function with throws with decimal FieldIDs', function(done) {
     const content = `
       service Test {
         void test() throws (1.2: string test)
