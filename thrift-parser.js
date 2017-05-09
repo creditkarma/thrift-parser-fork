@@ -1,4 +1,6 @@
 const path = require('path');
+const util = require('util');
+const log = util.debuglog('thrift-parser');
 
 class ThriftFileParsingError extends Error {
   constructor(message) {
@@ -543,7 +545,7 @@ module.exports = (buffer, offset = 0) => {
             storage[subject][name] = block;
         }
       } catch (message) {
-        console.error(`[31m${buffer.slice(offset, offset + 50)}[0m`); // eslint-disable-line no-console
+        log(`[31m${buffer.slice(offset, offset + 50)}[0m`);
         throw new ThriftFileParsingError(message);
       } finally {
         if (buffer.length === offset) break;
