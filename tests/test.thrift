@@ -1,6 +1,9 @@
 namespace php hehe
 namespace * haha
 include "Status.Type"
+include "dotThrift.thrift"
+include "a/b/basename"
+include "a\b\basenameInWindows"
 /******
  * Types
  *****/
@@ -25,6 +28,10 @@ const i16 C10 = 0x7fff
 const i32 C11 = 0x7fffffff
 const i16 C12 = -3e4
 const i32 C13 = 2.147483647e9
+
+const string chinese_test = "中文测试"
+const string japanese_test = "日本語テスト"
+const string emoji_test = "😂 "
 
 /**
  * Enum
