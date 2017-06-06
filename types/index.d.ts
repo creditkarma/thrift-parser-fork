@@ -1,12 +1,12 @@
-type SetType = {
+interface SetType {
   name: 'set',
   valueType: ValueType,
 }
-type ListType = {
+interface ListType {
   name: 'list',
   valueType: ValueType,
 }
-type MapType = {
+interface MapType {
   name: 'map',
   keyType: ValueType,
   valueType: ValueType,
@@ -14,67 +14,67 @@ type MapType = {
 type ValueType = string | SetType | ListType | MapType;
 type ThriftType = 'int' | 'bool' | 'i16' | 'i32' | 'i64' | 'string';
 type FieldOption = 'required' | 'optional';
-type Field = {
+interface Field {
   id: string,
   option: FieldOption,
   type: ThriftType,
   name: string,
-};
+}
 
-type Method = {
+interface Method {
   type: ValueType,
   name: string,
   args: Field[],
   throws: Field[],
 }
 
-type Structs = {
+interface Structs {
   [name: string]: Field[],
 }
 
-type Unions = {
+interface Unions {
   [name: string]: Field[],
 }
 
-type Exceptions = {
+interface Exceptions {
   [name: string]: Field[],
 }
 
-type Services = {
+interface Services {
   [serviceName: string]: {
     [methodName: string]: Method,
   },
 }
 
-type Namespaces = {
+interface Namespaces {
   [name: string]: {
     serviceName: string,
   }
 }
 
-type Includes = {
+interface Includes {
   [name: string]: {
     path: string,
   }
 }
 
-type TypeDefs = {
+interface TypeDefs {
   [name: string]: {
     type: string,
   }
 }
 
-type StaticConst = {
+interface StaticConst {
   type: string,
   value: any,
 }
 
-type ListConst = {
+interface ListConst {
   type: ListType,
   value: any,
 }
 
-type MapConst = {
+interface MapConst {
   type: MapType,
   value: {
     key: any,
@@ -82,16 +82,16 @@ type MapConst = {
   }[],
 }
 
-type SetConst = {
+interface SetConst {
   type: SetType,
   value: any,
 }
 
-type Consts = {
+interface Consts {
   [name: string]: StaticConst | ListConst | MapConst | SetConst,
 }
 
-type Enums = {
+interface Enums {
   [name: string]: {
     items: {
       name: string,
@@ -100,7 +100,7 @@ type Enums = {
   }
 }
 
-type JsonAST = {
+interface JsonAST {
   namespace?: Namespaces,
   typedef?: TypeDefs,
   include?: Includes,
@@ -110,7 +110,7 @@ type JsonAST = {
   union?: Unions,
   exception?: Exceptions,
   service?: Services,
-};
+}
 
 declare module 'thrift-parser' {
   interface ThriftFileParsingError extends Error {
