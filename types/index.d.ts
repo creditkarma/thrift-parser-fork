@@ -21,17 +21,11 @@ type Field = {
   name: string,
 };
 
-type ArgOrExecption = {
-  id: string,
-  type: ValueType,
-  name: string,
-}
-
 type Method = {
   type: ValueType,
   name: string,
-  args: ArgOrExecption[],
-  throws: ArgOrExecption[],
+  args: Field[],
+  throws: Field[],
 }
 
 type Structs = {
