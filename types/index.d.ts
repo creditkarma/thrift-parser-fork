@@ -1,5 +1,3 @@
-/// <reference types="node" />
-
 type SetType = {
   name: 'set',
   valueType: ValueType,
@@ -126,7 +124,7 @@ declare module 'thrift-parser' {
     name: 'THRIFT_FILE_PARSING_ERROR';
   }
 
-  function parser (str: string | Buffer): JsonAST;
+  function parser (str: string): JsonAST;
 
   export = parser;
 }
