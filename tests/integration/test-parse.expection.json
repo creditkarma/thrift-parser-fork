@@ -136,30 +136,26 @@
     }
   },
   "enum": {
-    "Enum1": {
-      "items": [
-        {
-          "name": "TYPE_DISCOVER",
-          "value": 1
-        },
-        {
-          "name": "TYPE_NOTIFY",
-          "value": 2
-        }
-      ]
-    },
-    "Enum2": {
-      "items": [
-        {
-          "name": "OPERATE_TYPE_MANUAL",
-          "value": 1
-        },
-        {
-          "name": "OPERATE_TYPE_AUTO",
-          "value": 2
-        }
-      ]
-    }
+    "Enum1": [
+      {
+        "name": "TYPE_DISCOVER",
+        "value": 1
+      },
+      {
+        "name": "TYPE_NOTIFY",
+        "value": 2
+      }
+    ],
+    "Enum2": [
+      {
+        "name": "OPERATE_TYPE_MANUAL",
+        "value": 1
+      },
+      {
+        "name": "OPERATE_TYPE_AUTO",
+        "value": 2
+      }
+    ]
   },
   "struct": {
     "Struct1": [

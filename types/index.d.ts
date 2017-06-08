@@ -91,13 +91,13 @@ interface Consts {
   [name: string]: StaticConst | ListConst | MapConst | SetConst,
 }
 
+interface EnumField {
+  name: string,
+  value: string | number | boolean,
+}
+
 interface Enums {
-  [name: string]: {
-    items: {
-      name: string,
-      value: string | number | boolean,
-    }[]
-  }
+  [name: string]: EnumField[]
 }
 
 interface JsonAST {

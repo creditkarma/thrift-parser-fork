@@ -15,14 +15,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test',
-              value: 1
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test',
+            value: 1
+          }
+        ]
       }
     };
 
@@ -43,22 +41,20 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            },
-            {
-              name: 'test2',
-              value: 2
-            },
-            {
-              name: 'test3',
-              value: 3
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test1',
+            value: 1
+          },
+          {
+            name: 'test2',
+            value: 2
+          },
+          {
+            name: 'test3',
+            value: 3
+          }
+        ]
       }
     };
 
@@ -80,19 +76,17 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test1'
-            },
-            {
-              name: 'test2'
-            },
-            {
-              name: 'test3'
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test1'
+          },
+          {
+            name: 'test2'
+          },
+          {
+            name: 'test3'
+          }
+        ]
       }
     };
 
@@ -114,21 +108,19 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            },
-            {
-              name: 'test2'
-            },
-            {
-              name: 'test3',
-              value: 3
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test1',
+            value: 1
+          },
+          {
+            name: 'test2'
+          },
+          {
+            name: 'test3',
+            value: 3
+          }
+        ]
       }
     };
 
@@ -147,14 +139,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test1',
+            value: 1
+          }
+        ]
       }
     };
 
@@ -174,18 +164,16 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            },
-            {
-              name: 'test2',
-              value: 2
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test1',
+            value: 1
+          },
+          {
+            name: 'test2',
+            value: 2
+          }
+        ]
       }
     };
 
@@ -205,18 +193,16 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            },
-            {
-              name: 'test2',
-              value: 2
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test1',
+            value: 1
+          },
+          {
+            name: 'test2',
+            value: 2
+          }
+        ]
       }
     };
 
@@ -236,18 +222,16 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            },
-            {
-              name: 'test2',
-              value: 2
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test1',
+            value: 1
+          },
+          {
+            name: 'test2',
+            value: 2
+          }
+        ]
       }
     };
 
@@ -266,14 +250,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        _Test: {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            }
-          ]
-        }
+        _Test: [
+          {
+            name: 'test1',
+            value: 1
+          }
+        ]
       }
     };
 
@@ -292,14 +274,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Te_st: {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            }
-          ]
-        }
+        Te_st: [
+          {
+            name: 'test1',
+            value: 1
+          }
+        ]
       }
     };
 
@@ -318,14 +298,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        'Te.st': {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            }
-          ]
-        }
+        'Te.st': [
+          {
+            name: 'test1',
+            value: 1
+          }
+        ]
       }
     };
 
@@ -344,14 +322,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        'Te.st_123': {
-          items: [
-            {
-              name: 'test1',
-              value: 1
-            }
-          ]
-        }
+        'Te.st_123': [
+          {
+            name: 'test1',
+            value: 1
+          }
+        ]
       }
     };
 
@@ -370,14 +346,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: '_test1',
-              value: 1
-            }
-          ]
-        }
+        Test: [
+          {
+            name: '_test1',
+            value: 1
+          }
+        ]
       }
     };
 
@@ -396,14 +370,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test_1',
-              value: 1
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test_1',
+            value: 1
+          }
+        ]
       }
     };
 
@@ -422,14 +394,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'test.1',
-              value: 1
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'test.1',
+            value: 1
+          }
+        ]
       }
     };
 
@@ -448,14 +418,12 @@ describe('enums', function() {
 
     const expected = {
       enum: {
-        Test: {
-          items: [
-            {
-              name: 'te.st_1',
-              value: 1
-            }
-          ]
-        }
+        Test: [
+          {
+            name: 'te.st_1',
+            value: 1
+          }
+        ]
       }
     };
 

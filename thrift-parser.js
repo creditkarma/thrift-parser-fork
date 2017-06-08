@@ -564,6 +564,7 @@ module.exports = (source, offset = 0) => {
           case 'exception':
           case 'struct':
           case 'union':
+          case 'enum':
             storage[subject][name] = block.items;
             break;
           default:
